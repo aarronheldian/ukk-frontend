@@ -26,7 +26,7 @@ export function getListPengaduan(params) {
   };
 }
 
-export function addPengaduan({ payload, callback }) {
+export function addPengaduan({ payload, callback, currentParams }) {
   return dispatch => {
     const options = {
       method: 'POST',
@@ -44,7 +44,7 @@ export function addPengaduan({ payload, callback }) {
           content: message,
           success: true
         });
-        dispatch(getListPengaduan());
+        dispatch(getListPengaduan(currentParams));
       })
       .catch(({message}) => {
         dispatch(doneLoadingSubmitAction());
@@ -56,7 +56,7 @@ export function addPengaduan({ payload, callback }) {
   };
 }
 
-export function updateStatus({ id, payload, callback }) {
+export function updateStatus({ id, payload, callback, currentParams }) {
   return dispatch => {
     const options = {
       method: 'PUT',
@@ -74,7 +74,7 @@ export function updateStatus({ id, payload, callback }) {
           success: true
         });
         dispatch(doneLoadingSubmitAction());
-        dispatch(getListPengaduan());
+        dispatch(getListPengaduan(currentParams));
       })
       .catch(({ message }) => {
         dispatch(doneLoadingSubmitAction());

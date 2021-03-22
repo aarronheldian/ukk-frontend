@@ -128,7 +128,7 @@ export default function Component(props) {
       payload.append('description', values.description);
       payload.append('photos', values.photo);
       setOpenFormPengaduan(false)
-      actions.addPengaduan({payload, callback: setAlert});
+      actions.addPengaduan({ payload, callback: setAlert, currentParams: params });
     }
   };
 
@@ -139,7 +139,7 @@ export default function Component(props) {
     };
 
     setOpenFormRejected(null)
-    actions.updateStatus({id: openFormRejected, payload, callback: setAlert});
+    actions.updateStatus({ id: openFormRejected, payload, callback: setAlert, currentParams: params });
   }
   
   const updateToApproved = (values = {}) => {
@@ -149,7 +149,7 @@ export default function Component(props) {
     };
 
     setOpenFormApproved(null)
-    actions.updateStatus({id: openFormApproved, payload, callback: setAlert});
+    actions.updateStatus({ id: openFormApproved, payload, callback: setAlert, currentParams: params });
   }
 
   const renderPengaduanForm = (

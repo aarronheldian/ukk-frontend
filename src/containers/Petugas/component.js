@@ -84,7 +84,7 @@ export default function Component(props) {
     };
 
     setOpenFormPetugas(false)
-    actions.addPetugas({payload, callback: setAlert});
+    actions.addPetugas({ payload, callback: setAlert, currentParams: params });
   };
   
   const handleUpdatePetugas = (values = {}) => {
@@ -95,7 +95,7 @@ export default function Component(props) {
       password: values.password
     };
 
-    actions.updatePetugas({id: openFormEditPetugas, payload, callbackAlert: setAlert, callback: setOpenFormEditPetugas});
+    actions.updatePetugas({ id: openFormEditPetugas, payload, callbackAlert: setAlert, callback: setOpenFormEditPetugas, currentParams: params });
   };
 
   const renderPetugasForm = (

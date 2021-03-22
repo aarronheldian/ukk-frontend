@@ -26,7 +26,7 @@ export function getListPetugas(params) {
   };
 }
 
-export function addPetugas({ payload, callback }) {
+export function addPetugas({ payload, callback, currentParams }) {
   return dispatch => {
     const options = {
       method: 'POST',
@@ -44,7 +44,7 @@ export function addPetugas({ payload, callback }) {
           content: message,
           success: true
         });
-        dispatch(getListPetugas());
+        dispatch(getListPetugas(currentParams));
       })
       .catch(({message}) => {
         dispatch(doneLoadingsubmitAction());
@@ -56,7 +56,7 @@ export function addPetugas({ payload, callback }) {
   };
 }
 
-export function updatePetugas({ id, payload, callbackAlert, callback }) {
+export function updatePetugas({ id, payload, callbackAlert, callback, currentParams }) {
   return dispatch => {
     const options = {
       method: 'PUT',
@@ -75,6 +75,7 @@ export function updatePetugas({ id, payload, callbackAlert, callback }) {
           success: true
         });
         callback(null);
+        dispatch(getListPetugas(currentParams));
       })
       .catch(({message}) => {
         dispatch(doneLoadingsubmitAction());
@@ -83,7 +84,6 @@ export function updatePetugas({ id, payload, callbackAlert, callback }) {
           success: false
         });
         callback(null);
-        dispatch(getListPetugas());
       });
   };
 }
