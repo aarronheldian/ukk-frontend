@@ -44,6 +44,7 @@ export function addPengaduan({ payload, callback }) {
           content: message,
           success: true
         });
+        dispatch(getListPengaduan());
       })
       .catch(({message}) => {
         dispatch(doneLoadingSubmitAction());
@@ -73,6 +74,7 @@ export function updateStatus({ id, payload, callback }) {
           success: true
         });
         dispatch(doneLoadingSubmitAction());
+        dispatch(getListPengaduan());
       })
       .catch(({ message }) => {
         dispatch(doneLoadingSubmitAction());

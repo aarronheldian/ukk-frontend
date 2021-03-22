@@ -44,6 +44,7 @@ export function addPetugas({ payload, callback }) {
           content: message,
           success: true
         });
+        dispatch(getListPetugas());
       })
       .catch(({message}) => {
         dispatch(doneLoadingsubmitAction());
@@ -82,6 +83,7 @@ export function updatePetugas({ id, payload, callbackAlert, callback }) {
           success: false
         });
         callback(null);
+        dispatch(getListPetugas());
       });
   };
 }
