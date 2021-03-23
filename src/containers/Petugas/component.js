@@ -233,13 +233,20 @@ export default function Component(props) {
           <Divider/>
           {renderTable}
         </Grid>
-        {data.length && meta.lastPage > 1 && (<Grid item xs={12} align="right">
-          <Grid container justify="flex-end" spacing={3}>
+        <Grid item xs={12} align="right">
+          <Grid container justify="space-between" spacing={3}>
             <Grid item>
-              <Pagination count={meta.lastPage} color="primary" onChange={handlePagination} />
+              <Typography component="span" variant="caption">
+                {`Total Petugas: ${meta.totalData} Orang`}
+              </Typography>
             </Grid>
+            {data.length && meta.lastPage > 1 && (
+              <Grid item>
+                <Pagination count={meta.lastPage} color="primary" onChange={handlePagination} />
+              </Grid>
+            )}
           </Grid>
-        </Grid>)}
+        </Grid>
       </Grid>
       {renderAlert}
       {renderPetugasForm}
