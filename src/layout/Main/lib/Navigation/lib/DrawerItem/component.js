@@ -32,7 +32,7 @@ const Component = props => {
         </div>
         {!show && (
           <div className={classes.label}>
-            <Typography component='span' className={classnames(classes.text, {[classes.textActive] : active})}>{label}</Typography>
+            <Typography component='span' className={classnames(classes.text, {[classes.textActive] : active})} variant="button">{label}</Typography>
           </div>
         )}
       </div>

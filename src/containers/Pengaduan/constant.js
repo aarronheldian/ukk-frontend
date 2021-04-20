@@ -6,5 +6,5 @@ export const tableHeader = [
   { id: 'createdAt', label: 'Created Date'},
   { id: 'updatedAt', label: 'Last Update'},
   { id: 'note', label: 'Note'},
-  { id: 'status', label: 'Status'},
+  { id: 'statusVariant', label: 'Status'},
 ];

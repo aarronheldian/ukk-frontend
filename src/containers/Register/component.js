@@ -30,7 +30,7 @@ export default function Component(props) {
       <Auth>
         <Grid container spacing={3}>
           <Grid align="center" item xs={12}>
-            <img src={'https://telkomschools.sch.id/web/wp-content/uploads/2018/11/ts-footer.png'} />
+            <img src={'https://telkomschools.sch.id/web/wp-content/uploads/2018/11/ts-footer.png'} alt="logo" />
           </Grid>
           <Grid align="center" item xs={12}>
             <Typography component="span" variant="h5">Type your details below</Typography>

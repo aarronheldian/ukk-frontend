@@ -31,17 +31,23 @@ import { isRole } from '../../utils/common';
 import { Add, MoreHoriz, Check, Clear } from '@material-ui/icons';
 import PopupState, { bindToggle, bindPopper } from 'material-ui-popup-state';
 import CallbackAlert from '../../components/elements/CallbackAlert';
+import ConfirmationDialog from '../../components/elements/ConfirmationDialog';
 import Dialog from '../../components/elements/Dialog';
 import PengaduanForm from '../../components/forms/Pengaduan';
 import RejectForm from '../../components/forms/Reject';
 import ApproveForm from '../../components/forms/Approve';
 
 export default function Component(props) {
-  const [alert, setAlert] = useState({ content: '', success: true });
+  const [alert, setAlerts] = useState({ content: '', success: true });
   const [openFormPengaduan, setOpenFormPengaduan] = useState(false);
   const [openFormRejected, setOpenFormRejected] = useState(null);
   const [openFormApproved, setOpenFormApproved] = useState(null);
   const [openImageModal, setOpenImageModal] = useState(null);
+  const [confirmation, setConfirmation] = useState({
+    content: '',
+    secondaryContent: '',
+    actions: [],
+  });
   const [activeTab, setActiveTab] = useState(0);
   const [params, setParams] = useState({
     limit: 8,
@@ -58,10 +64,24 @@ export default function Component(props) {
 
   const handleChangeTab = (_event, value) => {
     setActiveTab(value)
+    let status;
+    switch (value) {
+      case 0:
+        status = 'pending';
+        break;
+      case 1:
+        status = 'onprogress';
+        break;
+      case 2:
+        status = 'history';
+        break;
+      default:
+        break;
+    }
     setParams({
       ...params,
       page: 1,
-      status: value === 0 ? 'pending' : 'history',
+      status: status,
     })
   };
   
@@ -69,12 +89,34 @@ export default function Component(props) {
     setParams({ ...params, page: value})
   };
 
+  const setAlert = (params) => {
+    setAlerts(params);
+    setConfirmation({
+      content: '',
+      secondaryContent: '',
+      actions: [],
+    });
+  };
+
   const closeAlert = () => setAlert({ content: '', success: true });
+
+  const closeConfirmationDialog = () => setConfirmation({
+    content: '',
+    secondaryContent: '',
+    actions: [],
+  });
 
   const renderAlert = (
     <CallbackAlert onClose={closeAlert} {...alert}/>
   );
-  
+
+  const renderConfirmationDialog = (
+    <ConfirmationDialog 
+      {...confirmation} 
+      onClose={closeConfirmationDialog}
+    />
+  );
+
   const normalizeData = (data) => {
     const photoC = ({ file }) => (
       <Link
@@ -91,6 +133,7 @@ export default function Component(props) {
         className={classnames(classes.rootStatus, {
           [classes.blue]: status === 'Pending',
           [classes.green]: status === 'Approved',
+          [classes.orange]: status === 'On Progress',
           [classes.red]: status === 'Rejected',
         },)}
       >
@@ -98,6 +141,7 @@ export default function Component(props) {
           className={classnames({
             [classes.blue]: status === 'Pending',
             [classes.green]: status === 'Approved',
+            [classes.orange]: status === 'On Progress',
             [classes.red]: status === 'Rejected',
           },)}
           component="div"
@@ -113,7 +157,7 @@ export default function Component(props) {
 
     return data.map(item => ({
       ...item,
-      status: statusVariant(item),
+      statusVariant: statusVariant(item),
       photo: photoC(item),
       createdBy: item.createdBy.name,
       createdAt: datetime(item.createdAt, 'date-time'),
@@ -152,6 +196,14 @@ export default function Component(props) {
     actions.updateStatus({ id: openFormApproved, payload, callback: setAlert, currentParams: params });
   }
 
+  const updateToOnProgress = (id) => {
+    const payload = {
+      status: 'onprogress',
+    };
+
+    actions.updateStatus({ id: id, payload, callback: setAlert, currentParams: params });
+  }
+
   const renderPengaduanForm = (
     <Dialog
       maxWidth="xs"
@@ -159,7 +211,13 @@ export default function Component(props) {
       open={openFormPengaduan}
     >
       <PengaduanForm
-        onSubmit={handleAddPengaduan}
+        onSubmit={() => setConfirmation({
+          content: `Apakah anda yakin membuat pengaduan ini?`,
+          actions: [
+            { label: 'No', action: () => closeConfirmationDialog() },
+            { label: 'Yes', action: handleAddPengaduan },
+          ],
+        })}
       />
     </Dialog>
   );
@@ -171,7 +229,13 @@ export default function Component(props) {
       open={openFormRejected}
     >
       <RejectForm
-        onSubmit={updateToRejected}
+        onSubmit={() => setConfirmation({
+          content: `Apakah anda yakin Reject pengaduan ini?`,
+          actions: [
+            { label: 'No', action: () => closeConfirmationDialog() },
+            { label: 'Yes', action: updateToRejected },
+          ],
+        })}
       />
     </Dialog>
   );
@@ -183,7 +247,13 @@ export default function Component(props) {
       open={openFormApproved}
     >
       <ApproveForm
-        onSubmit={updateToApproved}
+        onSubmit={() => setConfirmation({
+          content: `Apakah anda yakin Approve pengaduan ini?`,
+          actions: [
+            { label: 'No', action: () => closeConfirmationDialog() },
+            { label: 'Yes', action: updateToApproved },
+          ],
+        })}
       />
     </Dialog>
   );
@@ -222,9 +292,15 @@ export default function Component(props) {
                 Pengaduan
               </Button>
             )}
-            {isRole('admin') && activeTab === 1 && (
+            {isRole('admin') && activeTab === 2 && (
               <Button
-                onClick={() => actions.download({ callback: setAlert })}
+                onClick={() => setConfirmation({
+                  content: `Apakah anda yakin Generate Laporan?`,
+                  actions: [
+                    { label: 'No', action: () => closeConfirmationDialog() },
+                    { label: 'Yes', action: () => actions.download({ callback: setAlert }) },
+                  ],
+                })}
                 variant="contained"
                 color="primary"
               >
@@ -258,7 +334,17 @@ export default function Component(props) {
               selected: classes.tabSelected
             }}
             disableTouchRipple
-            key={'tabs1'}
+            key={'tabs2'}
+            label="On Progress"
+          />
+          <Tab
+            classes={{
+              root: classes.tabRoot,
+              wrapper: classes.tabWrapper,
+              selected: classes.tabSelected
+            }}
+            disableTouchRipple
+            key={'tabs3'}
             label="History"
           />
         </Tabs>
@@ -272,10 +358,57 @@ export default function Component(props) {
         {tableHeader.map( item => (
           <TableCell>{item.label}</TableCell>
         ))}
-        {!isRole('user') && activeTab === 0 && <TableCell>Action</TableCell>}
+        {!isRole('user') && activeTab !== 2 && <TableCell>Action</TableCell>}
       </TableRow>
     </TableHead>
   );
+
+  const optionUpdate = ({ status, _id }) => {
+    switch (status) {
+      case 'Pending':
+        return (
+          <>
+            <MenuItem onClick={() => setConfirmation({
+              content: `Apakah anda yakin Approve pengaduan ini?`,
+              actions: [
+                { label: 'No', action: () => closeConfirmationDialog() },
+                { label: 'Yes', action: () => updateToOnProgress(_id) },
+              ],
+            })}>
+              <ListItemIcon>
+                <Check fontSize="small" />
+              </ListItemIcon>
+              <Typography variant="inherit">Approve</Typography>
+            </MenuItem>
+            <MenuItem onClick={() => setOpenFormRejected(_id)}>
+              <ListItemIcon>
+                <Clear fontSize="small" />
+              </ListItemIcon>
+              <Typography variant="inherit">Reject</Typography>
+            </MenuItem>
+          </>
+        )
+      case 'On Progress':
+        return (
+          <>
+            <MenuItem onClick={() => setOpenFormApproved(_id)}>
+              <ListItemIcon>
+                <Check fontSize="small" />
+              </ListItemIcon>
+              <Typography variant="inherit">Solve</Typography>
+            </MenuItem>
+            <MenuItem onClick={() => setOpenFormRejected(_id)}>
+              <ListItemIcon>
+                <Clear fontSize="small" />
+              </ListItemIcon>
+              <Typography variant="inherit">Reject</Typography>
+            </MenuItem>
+          </>
+        )
+      default:
+        break;
+    }
+  };
   
   const tableBody = (
     <TableBody>
@@ -289,7 +422,7 @@ export default function Component(props) {
               {item[i.id] || '-'}
             </TableCell>
           ))}
-          {!isRole('user') && activeTab === 0 && (
+          {!isRole('user') && activeTab !== 2 && (
             <TableCell>
               <PopupState variant="popper" popupId="popup-action">
                 {(popupState) => (
@@ -303,18 +436,7 @@ export default function Component(props) {
                           <Paper>
                             <ClickAwayListener onClickAway={popupState.close}>
                               <MenuList>
-                                <MenuItem onClick={() => setOpenFormApproved(item._id)}>
-                                  <ListItemIcon>
-                                    <Check fontSize="small" />
-                                  </ListItemIcon>
-                                  <Typography variant="inherit">Approve</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={() => setOpenFormRejected(item._id)}>
-                                  <ListItemIcon>
-                                    <Clear fontSize="small" />
-                                  </ListItemIcon>
-                                  <Typography variant="inherit">Reject</Typography>
-                                </MenuItem>
+                                {optionUpdate(item)}
                               </MenuList>
                             </ClickAwayListener>
                           </Paper>
@@ -364,7 +486,7 @@ export default function Component(props) {
           <Grid container justify="space-between" spacing={3}>
             <Grid item>
               <Typography component="span" variant="caption">
-                {activeTab === 0 ? `Total Pending: ${meta.totalData} Data` : `Total History: ${meta.totalData} Data`}
+                {activeTab === 0 ? `Total Pending: ${meta.totalData} Data` : activeTab === 1 ? `Total On Progress: ${meta.totalData} Data` : `Total History: ${meta.totalData} Data`}
               </Typography>
             </Grid>
             {data.length && meta.lastPage > 1 && (
@@ -376,6 +498,7 @@ export default function Component(props) {
         </Grid>
       </Grid>
       {renderAlert}
+      {renderConfirmationDialog}
       {renderPengaduanForm}
       {renderApproveForm}
       {renderRejectForm}

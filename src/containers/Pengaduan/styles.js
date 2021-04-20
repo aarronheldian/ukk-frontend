@@ -27,6 +27,10 @@ const styles = theme => ({
     backgroundColor: theme.color.blue.soft,
     color: theme.color.blue.main
   },
+  orange: {
+    backgroundColor: theme.color.orange.soft,
+    color: theme.color.orange.main
+  },
   green: {
     backgroundColor: theme.color.green.soft,
     color: theme.color.green.main
