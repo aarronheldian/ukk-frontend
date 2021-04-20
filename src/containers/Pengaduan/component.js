@@ -211,11 +211,11 @@ export default function Component(props) {
       open={openFormPengaduan}
     >
       <PengaduanForm
-        onSubmit={() => setConfirmation({
+        onSubmit={(values) => setConfirmation({
           content: `Apakah anda yakin membuat pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: handleAddPengaduan },
+            { label: 'Yes', action: handleAddPengaduan(values) },
           ],
         })}
       />
@@ -229,11 +229,11 @@ export default function Component(props) {
       open={openFormRejected}
     >
       <RejectForm
-        onSubmit={() => setConfirmation({
+        onSubmit={(values) => setConfirmation({
           content: `Apakah anda yakin Reject pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: updateToRejected },
+            { label: 'Yes', action: updateToRejected(values) },
           ],
         })}
       />
@@ -247,11 +247,11 @@ export default function Component(props) {
       open={openFormApproved}
     >
       <ApproveForm
-        onSubmit={() => setConfirmation({
+        onSubmit={(values) => setConfirmation({
           content: `Apakah anda yakin Approve pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: updateToApproved },
+            { label: 'Yes', action: updateToApproved(values) },
           ],
         })}
       />
