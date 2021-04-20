@@ -215,7 +215,7 @@ export default function Component(props) {
           content: `Apakah anda yakin membuat pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: handleAddPengaduan(values) },
+            { label: 'Yes', action: () => handleAddPengaduan(values) },
           ],
         })}
       />
