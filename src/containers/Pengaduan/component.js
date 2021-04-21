@@ -233,7 +233,7 @@ export default function Component(props) {
           content: `Apakah anda yakin Reject pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: updateToRejected(values) },
+            { label: 'Yes', action: () => updateToRejected(values) },
           ],
         })}
       />
@@ -251,7 +251,7 @@ export default function Component(props) {
           content: `Apakah anda yakin Approve pengaduan ini?`,
           actions: [
             { label: 'No', action: () => closeConfirmationDialog() },
-            { label: 'Yes', action: updateToApproved(values) },
+            { label: 'Yes', action: () => updateToApproved(values) },
           ],
         })}
       />
